@@ -29,6 +29,11 @@ namespace SmoothTalker
         public static ConfigEntry<bool> GrenadeEnabled { get; private set; }
         public static ConfigEntry<EPhraseTrigger> GrenadeTrigger { get; private set; }
 
+        // Shot At
+        public static ConfigEntry<bool> ShotAtEnabled { get; private set; }
+        public static ConfigEntry<EPhraseTrigger> ShotAtTrigger { get; private set; }
+        public static ConfigEntry<float> ShotAtRadius { get; private set; }
+
         public static void Init(ConfigFile config)
         {
             const string general = "1. General";
@@ -36,6 +41,7 @@ namespace SmoothTalker
             const string reload = "3. Reload";
             const string outOfAmmo = "4. Out of Ammo";
             const string grenade = "5. Grenade";
+            const string shotAt = "6. Shot At";
 
             Enabled = config.Bind(
                 general,
@@ -203,6 +209,43 @@ namespace SmoothTalker
                 new ConfigDescription(
                     "Voice line to play on grenade throw.",
                     null,
+                    new global::ConfigurationManagerAttributes
+                    {
+                        Order = 1
+                    }));
+
+            ShotAtEnabled = config.Bind(
+                shotAt,
+                "Enabled",
+                true,
+                new ConfigDescription(
+                    "Play a voice line when an enemy bullet passes close to the player.",
+                    null,
+                    new global::ConfigurationManagerAttributes
+                    {
+                        Order = 3
+                    }));
+
+            ShotAtTrigger = config.Bind(
+                shotAt,
+                "Voice Trigger",
+                EPhraseTrigger.OnBeingHurt,
+                new ConfigDescription(
+                    "Voice line to play when getting shot at.",
+                    null,
+                    new global::ConfigurationManagerAttributes
+                    {
+                        Order = 2
+                    }));
+
+            ShotAtRadius = config.Bind(
+                shotAt,
+                "Detection Radius (meters)",
+                5f,
+                new ConfigDescription(
+                    "How close (in meters) a bullet must pass to trigger the voice line.\n" +
+                    "Mirrors the perpendicular distance FlyingBulletSoundPlayer uses (~10m for near-miss audio).",
+                    new AcceptableValueRange<float>(0.5f, 20f),
                     new global::ConfigurationManagerAttributes
                     {
                         Order = 1

@@ -34,6 +34,8 @@ namespace SmoothTalker
             EnablePatch<Patches.GrenadeHighThrowPatch>();
             EnablePatch<Patches.GrenadeLowThrowPatch>();
 
+            Patches.ShotAtHandler.TrySubscribe();
+
             Logger.LogInfo("SmoothTalker v1.0.0 loaded.");
         }
 
