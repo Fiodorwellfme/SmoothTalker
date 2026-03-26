@@ -11,6 +11,7 @@ namespace SmoothTalker
         private static MethodInfo _tryGetCoopHandlerMethod;
         private static PropertyInfo _humanPlayersProp;
         private static PropertyInfo _isYourPlayerProp;
+        private static PropertyInfo _profileIdProp;
         private static PropertyInfo _healthControllerProp;
         private static PropertyInfo _isAliveProp;
 
@@ -47,6 +48,7 @@ namespace SmoothTalker
                 }
 
                 _isYourPlayerProp = playerType.GetProperty("IsYourPlayer", BindingFlags.Public | BindingFlags.Instance);
+                _profileIdProp = playerType.GetProperty("ProfileId", BindingFlags.Public | BindingFlags.Instance);
                 _healthControllerProp = playerType.GetProperty("HealthController", BindingFlags.Public | BindingFlags.Instance);
 
                 var healthControllerType = _healthControllerProp?.PropertyType;
@@ -55,6 +57,7 @@ namespace SmoothTalker
                 if (_tryGetCoopHandlerMethod == null
                     || _humanPlayersProp == null
                     || _isYourPlayerProp == null
+                    || _profileIdProp == null
                     || _healthControllerProp == null
                     || _isAliveProp == null)
                 {
@@ -109,6 +112,39 @@ namespace SmoothTalker
             catch (Exception ex)
             {
                 SmoothTalkerPlugin.Log($"[SmoothTalker] Error checking Fika multiplayer state: {ex.Message}");
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// Returns true when <paramref name="profileId"/> belongs to any human player
+        /// in the current Fika raid (including the local player). All humans in Fika
+        /// are teammates, so this doubles as a teammate filter.
+        /// Always returns false when Fika is not installed.
+        /// </summary>
+        internal static bool IsHumanPlayer(string profileId)
+        {
+            if (!FikaInstalled) return false;
+
+            try
+            {
+                object[] args = [null];
+                if (!(bool)_tryGetCoopHandlerMethod.Invoke(null, args) || args[0] == null)
+                    return false;
+
+                if (_humanPlayersProp.GetValue(args[0]) is not IList humanPlayers)
+                    return false;
+
+                for (var i = 0; i < humanPlayers.Count; i++)
+                {
+                    var player = humanPlayers[i];
+                    if (player != null && (string)_profileIdProp.GetValue(player) == profileId)
+                        return true;
+                }
+                return false;
+            }
+            catch
+            {
                 return false;
             }
         }

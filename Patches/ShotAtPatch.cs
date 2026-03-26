@@ -60,10 +60,16 @@ namespace SmoothTalker.Patches
                 Player mainPlayer = Singleton<GameWorld>.Instance.MainPlayer;
                 if (mainPlayer == null) return;
 
-                // Skip own shots
+                // Skip own shots and, when Fika is present, all teammates.
+                // In Fika every human in the raid is a co-op partner, so
+                // IsHumanPlayer covers both cases in one check.
                 IPlayer shooter = GetShooter(shot);
-                if (shooter != null && shooter.ProfileId == mainPlayer.ProfileId)
-                    return;
+                if (shooter != null)
+                {
+                    bool isSelf = shooter.ProfileId == mainPlayer.ProfileId;
+                    bool isTeammate = FikaDetection.IsHumanPlayer(shooter.ProfileId);
+                    if (isSelf || isTeammate) return;
+                }
 
                 // Suppress while the player is actively shooting back
                 if (SmoothTalkerConfig.ShotAtSuppressInCombat.Value && SmoothTalkerPlugin.InCombat)
