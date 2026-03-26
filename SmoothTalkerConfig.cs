@@ -33,6 +33,8 @@ namespace SmoothTalker
         public static ConfigEntry<bool> ShotAtEnabled { get; private set; }
         public static ConfigEntry<EPhraseTrigger> ShotAtTrigger { get; private set; }
         public static ConfigEntry<float> ShotAtRadius { get; private set; }
+        public static ConfigEntry<float> ShotAtCooldown { get; private set; }
+        public static ConfigEntry<bool> ShotAtSuppressInCombat { get; private set; }
 
         public static void Init(ConfigFile config)
         {
@@ -246,6 +248,32 @@ namespace SmoothTalker
                     "How close (in meters) a bullet must pass to trigger the voice line.\n" +
                     "Mirrors the perpendicular distance FlyingBulletSoundPlayer uses (~10m for near-miss audio).",
                     new AcceptableValueRange<float>(0.5f, 20f),
+                    new global::ConfigurationManagerAttributes
+                    {
+                        Order = 3
+                    }));
+
+            ShotAtCooldown = config.Bind(
+                shotAt,
+                "Cooldown (seconds)",
+                8f,
+                new ConfigDescription(
+                    "Minimum seconds between shot-at voicelines.\n" +
+                    "This is separate from the global cooldown so it doesn't compete with kill or reload lines.",
+                    new AcceptableValueRange<float>(1f, 60f),
+                    new global::ConfigurationManagerAttributes
+                    {
+                        Order = 2
+                    }));
+
+            ShotAtSuppressInCombat = config.Bind(
+                shotAt,
+                "Suppress When In Combat",
+                true,
+                new ConfigDescription(
+                    "Don't play the shot-at line while the player is actively shooting back.\n" +
+                    "Uses the same Combat Timeout window as the other combat-only settings.",
+                    null,
                     new global::ConfigurationManagerAttributes
                     {
                         Order = 1

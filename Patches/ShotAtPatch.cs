@@ -13,6 +13,7 @@ namespace SmoothTalker.Patches
         private static MethodInfo _calculateNormal;
         private static FieldInfo _shooterField;
         private static bool _shooterFieldSearched;
+        private static float _lastTriggeredTime = float.MinValue;
 
         public static void TrySubscribe()
         {
@@ -64,6 +65,14 @@ namespace SmoothTalker.Patches
                 if (shooter != null && shooter.ProfileId == mainPlayer.ProfileId)
                     return;
 
+                // Suppress while the player is actively shooting back
+                if (SmoothTalkerConfig.ShotAtSuppressInCombat.Value && SmoothTalkerPlugin.InCombat)
+                    return;
+
+                // Per-feature cooldown, independent of the global voiceline cooldown
+                if (Time.time - _lastTriggeredTime < SmoothTalkerConfig.ShotAtCooldown.Value)
+                    return;
+
                 // Perpendicular distance from the local player to the bullet's path line.
                 // Zero vector = bullet not passing near the player (outside trajectory segment).
                 var normalObj = _calculateNormal.Invoke(shot, new object[] { mainPlayer.Position });
@@ -71,6 +80,7 @@ namespace SmoothTalker.Patches
                 if (normal == Vector3.zero) return;
                 if (normal.magnitude > SmoothTalkerConfig.ShotAtRadius.Value) return;
 
+                _lastTriggeredTime = Time.time;
                 SmoothTalkerPlugin.Log(
                     $"[ShotAt] Bullet passed {normal.magnitude:F2}m from player — triggering voiceline.");
                 SmoothTalkerPlugin.TryPlayVoiceline(
