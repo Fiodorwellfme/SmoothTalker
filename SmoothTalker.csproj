@@ -41,6 +41,10 @@
       <HintPath>..\..\EscapeFromTarkov_Data\Managed\UnityEngine.CoreModule.dll</HintPath>
       <Private>False</Private>
     </Reference>
+	  <Reference Include="UnityEngine.PhysicsModule">
+		  <HintPath>..\..\EscapeFromTarkov_Data\Managed\UnityEngine.PhysicsModule.dll</HintPath>
+		  <Private>False</Private>
+	  </Reference>
   </ItemGroup>
 
   <!-- Post-build: copy DLL to BepInEx plugins folder -->

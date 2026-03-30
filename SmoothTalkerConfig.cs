@@ -41,7 +41,7 @@ namespace SmoothTalker
             const string reload = "3. Reload";
             const string outOfAmmo = "4. Out of Ammo";
             const string grenade = "5. Grenade";
-            const string pingSuppression = "6. Ping Suppression";
+            const string pingSuppression = "6. Confirmation";
 
             Enabled = config.Bind(
                 general,
@@ -244,7 +244,7 @@ namespace SmoothTalker
             PingSuppressionTrigger = config.Bind(
                 pingSuppression,
                 "Confirmation Voice",
-                EPhraseTrigger.OnGoodWork,
+                EPhraseTrigger.Roger,
                 new ConfigDescription(
                     "Voice line played on the local player when a ping is suppressed because a\n" +
                     "teammate already marked that location.",
