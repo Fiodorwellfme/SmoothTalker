@@ -7,7 +7,7 @@ using UnityEngine;
 
 namespace SmoothTalker
 {
-    [BepInPlugin("com.fiodor.smoothtalker", "SmoothTalker", "1.0.0")]
+    [BepInPlugin("com.fiodor.smoothtalker", "SmoothTalker", "1.1.0")]
     public sealed class SmoothTalkerPlugin : BaseUnityPlugin
     {
         internal static SmoothTalkerPlugin Instance;
@@ -29,12 +29,18 @@ namespace SmoothTalker
             EnablePatch<Patches.OnKillPatch>();
             EnablePatch<Patches.ReloadPatch>();
             if (FikaDetection.FikaInstalled)
+            {
                 EnablePatch<Patches.FikaReloadPatch>();
+                EnablePatch<Patches.ReceivePingPatch>();
+                EnablePatch<Patches.ClientSendPingPatch>();
+                EnablePatch<Patches.ServerSendPingPatch>();
+            }
             EnablePatch<Patches.DryShotPatch>();
             EnablePatch<Patches.GrenadeHighThrowPatch>();
             EnablePatch<Patches.GrenadeLowThrowPatch>();
 
-            Logger.LogInfo("SmoothTalker v1.0.0 loaded.");
+
+            Logger.LogInfo("SmoothTalker v1.1.0 loaded.");
         }
 
         private static void EnablePatch<T>() where T : SPT.Reflection.Patching.ModulePatch, new()

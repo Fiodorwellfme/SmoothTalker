@@ -29,6 +29,11 @@ namespace SmoothTalker
         public static ConfigEntry<bool> GrenadeEnabled { get; private set; }
         public static ConfigEntry<EPhraseTrigger> GrenadeTrigger { get; private set; }
 
+        // Ping Suppression
+        public static ConfigEntry<bool> PingSuppressionEnabled { get; private set; }
+        public static ConfigEntry<float> PingSuppressionRadius { get; private set; }
+        public static ConfigEntry<EPhraseTrigger> PingSuppressionTrigger { get; private set; }
+
         public static void Init(ConfigFile config)
         {
             const string general = "1. General";
@@ -36,6 +41,7 @@ namespace SmoothTalker
             const string reload = "3. Reload";
             const string outOfAmmo = "4. Out of Ammo";
             const string grenade = "5. Grenade";
+            const string pingSuppression = "6. Ping Suppression";
 
             Enabled = config.Bind(
                 general,
@@ -202,6 +208,46 @@ namespace SmoothTalker
                 EPhraseTrigger.OnGrenade,
                 new ConfigDescription(
                     "Voice line to play on grenade throw.",
+                    null,
+                    new global::ConfigurationManagerAttributes
+                    {
+                        Order = 1
+                    }));
+
+            PingSuppressionEnabled = config.Bind(
+                pingSuppression,
+                "Enabled",
+                true,
+                new ConfigDescription(
+                    "When enabled, pinging near an existing teammate ping plays a confirmation voice line\n" +
+                    "and suppresses both the outbound PingPacket and local visual ping.\n" +
+                    "Requires Fika to be installed.",
+                    null,
+                    new global::ConfigurationManagerAttributes
+                    {
+                        Order = 3
+                    }));
+
+            PingSuppressionRadius = config.Bind(
+                pingSuppression,
+                "Suppression Radius (meters)",
+                5f,
+                new ConfigDescription(
+                    "How close (in metres) your ping target must be to an existing teammate ping\n" +
+                    "for suppression to kick in.",
+                    new AcceptableValueRange<float>(0.5f, 30f),
+                    new global::ConfigurationManagerAttributes
+                    {
+                        Order = 2
+                    }));
+
+            PingSuppressionTrigger = config.Bind(
+                pingSuppression,
+                "Confirmation Voice",
+                EPhraseTrigger.OnGoodWork,
+                new ConfigDescription(
+                    "Voice line played on the local player when a ping is suppressed because a\n" +
+                    "teammate already marked that location.",
                     null,
                     new global::ConfigurationManagerAttributes
                     {
