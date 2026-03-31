@@ -121,7 +121,7 @@ namespace SmoothTalker
             PmcVoiceTrigger = config.Bind(
                 kills,
                 "PMC Kill Voice",
-                EPhraseTrigger.OnGoodWork,
+                EPhraseTrigger.EnemyDown,
                 new ConfigDescription(
                     "Voice line when killing a PMC (USEC/BEAR).",
                     null,
