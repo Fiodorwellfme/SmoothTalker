@@ -7,7 +7,7 @@ using UnityEngine;
 
 namespace SmoothTalker
 {
-    [BepInPlugin("com.fiodor.smoothtalker", "SmoothTalker", "1.1.0")]
+    [BepInPlugin("com.fiodor.smoothtalker", "SmoothTalker", "1.1.1")]
     public sealed class SmoothTalkerPlugin : BaseUnityPlugin
     {
         internal static SmoothTalkerPlugin Instance;
