@@ -7,7 +7,7 @@ using UnityEngine;
 
 namespace SmoothTalker
 {
-    [BepInPlugin("com.fiodor.smoothtalker", "SmoothTalker", "1.1.0")]
+    [BepInPlugin("com.fiodor.smoothtalker", "SmoothTalker", "1.1.1")]
     public sealed class SmoothTalkerPlugin : BaseUnityPlugin
     {
         internal static SmoothTalkerPlugin Instance;
@@ -40,7 +40,7 @@ namespace SmoothTalker
             EnablePatch<Patches.GrenadeLowThrowPatch>();
 
 
-            Logger.LogInfo("SmoothTalker v1.1.0 loaded.");
+            Logger.LogInfo("SmoothTalker v1.1.1 loaded.");
         }
 
         private static void EnablePatch<T>() where T : SPT.Reflection.Patching.ModulePatch, new()
