@@ -5,7 +5,8 @@ Heavily inspired by **ssh's VocalPlayer**, this mod autoplays voicelines when yo
 - Killing a PMC  
 - Killing a Scav  
 - Reloading  
-- Throwing a grenade  
+- Throwing a grenade
+- Confirming one of you team-mates' ping  
 - Firing with an empty chamber  
   
 ## Customizable:

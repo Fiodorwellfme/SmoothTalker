@@ -3,6 +3,7 @@ using Comfort.Common;
 using EFT;
 using HarmonyLib;
 using SPT.Reflection.Patching;
+using EFT.InventoryLogic;
 
 namespace SmoothTalker.Patches
 {
@@ -15,6 +16,10 @@ namespace SmoothTalker.Patches
         private static void Postfix(Player.FirearmController __instance)
         {
             if (!SmoothTalkerConfig.OutOfAmmoEnabled.Value)
+                return;
+            if (__instance.Item is not Weapon weapon)
+                return;
+            if (weapon.MalfState.State != Weapon.EMalfunctionState.None)
                 return;
 
             Player player = PatchHelper.GetControllerPlayer(__instance);
