@@ -40,7 +40,7 @@ namespace SmoothTalker
             EnablePatch<Patches.GrenadeLowThrowPatch>();
 
 
-            Logger.LogInfo("SmoothTalker v1.1.1 loaded.");
+            Logger.LogInfo("SmoothTalker v1.1.2 loaded.");
         }
 
         private static void EnablePatch<T>() where T : SPT.Reflection.Patching.ModulePatch, new()

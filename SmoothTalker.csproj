@@ -6,6 +6,11 @@
     <AssemblyName>SmoothTalker</AssemblyName>
     <RootNamespace>SmoothTalker</RootNamespace>
     <GenerateAssemblyInfo>true</GenerateAssemblyInfo>
+	<ModName>$(AssemblyName)</ModName>
+	<PackageStagingDir>$(ProjectDir)build\package</PackageStagingDir>
+	<PackagePluginDir>$(PackageStagingDir)\BepInEx\plugins\$(ModName)</PackagePluginDir>
+	<ReleaseDir>$(ProjectDir)Releases</ReleaseDir>
+	<ReleaseZip>$(ReleaseDir)\$(ModName).zip</ReleaseZip>
   </PropertyGroup>
 
   <ItemGroup>
@@ -47,8 +52,19 @@
 	  </Reference>
   </ItemGroup>
 
-  <!-- Post-build: copy DLL to BepInEx plugins folder -->
-  <Target Name="CopyToPlugins" AfterTargets="Build" Condition="Exists('..\..\BepInEx\plugins')">
-    <Copy SourceFiles="$(TargetPath)" DestinationFolder="..\..\BepInEx\plugins\SmoothTalker\" />
-  </Target>
+    <Target Name="PostBuild" AfterTargets="Build" Condition="'$(Configuration)' == 'Release'">
+        <MakeDir Directories="$(ProjectDir)\..\..\BepInEx\plugins\$(ModName)" />
+        <Copy SourceFiles="$(TargetPath)"
+		        DestinationFolder="$(ProjectDir)\..\..\BepInEx\plugins\$(ModName)" />
+
+        <RemoveDir Directories="$(PackageStagingDir)" Condition="Exists('$(PackageStagingDir)')" />
+        <MakeDir Directories="$(PackagePluginDir)" />
+        <Copy SourceFiles="$(TargetPath)"
+		        DestinationFolder="$(PackagePluginDir)" />
+
+        <MakeDir Directories="$(ReleaseDir)" />
+        <Delete Files="$(ReleaseZip)" Condition="Exists('$(ReleaseZip)')" />
+
+        <Exec Command="powershell -NoProfile -ExecutionPolicy Bypass -Command &quot;Compress-Archive -Path '$(PackageStagingDir)\*' -DestinationPath '$(ReleaseZip)' -Force&quot;" />
+    </Target>
 </Project>
