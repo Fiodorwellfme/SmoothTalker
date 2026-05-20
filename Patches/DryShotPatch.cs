@@ -15,19 +15,19 @@ namespace SmoothTalker.Patches
         [PatchPostfix]
         private static void Postfix(Player.FirearmController __instance)
         {
-            if (!SmoothTalkerConfig.OutOfAmmoEnabled.Value)
+            if (!Settings.OutOfAmmoEnabled.Value)
                 return;
             if (__instance.Item is not Weapon weapon)
                 return;
             if (weapon.MalfState.State != Weapon.EMalfunctionState.None)
                 return;
 
-            Player player = PatchHelper.GetControllerPlayer(__instance);
-            if (!PatchHelper.IsLocalPlayer(player))
+            Player player = Helpers.GetControllerPlayer(__instance);
+            if (!Helpers.IsLocalPlayer(player))
                 return;
 
-            SmoothTalkerPlugin.Log("[SmoothTalker] Dry shot — out of ammo");
-            SmoothTalkerPlugin.TryPlayVoiceline(player, SmoothTalkerConfig.OutOfAmmoTrigger.Value);
+            Plugin.LogSource.LogInfo("[SmoothTalker] Dry shot — out of ammo");
+            Helpers.TryPlayVoiceline(player, Settings.OutOfAmmoTrigger.Value);
         }
     }
 }

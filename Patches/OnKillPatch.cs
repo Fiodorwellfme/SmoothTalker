@@ -21,22 +21,21 @@ namespace SmoothTalker.Patches
             if (mainPlayer == null)
                 return;
 
-            // Only trigger when the local player is the one who got the kill
             if (aggressor.ProfileId != mainPlayer.ProfileId)
                 return;
 
-            // Don't play voiceline for killing yourself
             if (__instance.ProfileId == mainPlayer.ProfileId)
                 return;
 
-            bool isScav = __instance.Side == EPlayerSide.Savage;
-            string killType = isScav ? "Scav" : "PMC";
+            WildSpawnType role = __instance.Profile.Info.Settings.Role;
+            bool useScavLine = role == WildSpawnType.assault || role == WildSpawnType.marksman;
+            string killType = useScavLine ? "Scav" : "PMC";
 
-            SmoothTalkerPlugin.Log(
+            Plugin.LogSource.LogInfo(
                 $"[SmoothTalker] {killType} kill: {__instance.Profile.Nickname} — playing " +
-                (isScav ? SmoothTalkerConfig.ScavVoiceTrigger.Value : SmoothTalkerConfig.PmcVoiceTrigger.Value));
+                (useScavLine ? Settings.ScavVoiceTrigger.Value : Settings.PmcVoiceTrigger.Value));
 
-            SmoothTalkerPlugin.TryPlayKillVoiceline(isScav);
+            Helpers.TryPlayKillVoiceline(useScavLine);
         }
     }
 }

@@ -6,19 +6,19 @@ using SPT.Reflection.Patching;
 
 namespace SmoothTalker.Patches
 {
-    internal static class ReloadPatchHelper
+    internal static class ReloadHelpers
     {
-        public static void TryHandle(Player.ItemHandsController controller)
+        public static void TryPlayReloadVoiceline(Player.ItemHandsController controller)
         {
-            if (!SmoothTalkerConfig.ReloadEnabled.Value)
+            if (!Settings.ReloadEnabled.Value)
                 return;
 
-            Player player = PatchHelper.GetControllerPlayer(controller);
-            if (!PatchHelper.IsLocalPlayer(player))
+            Player player = Helpers.GetControllerPlayer(controller);
+            if (!Helpers.IsLocalPlayer(player))
                 return;
 
-            SmoothTalkerPlugin.Log("[SmoothTalker] Reload started");
-            SmoothTalkerPlugin.TryPlayVoiceline(player, SmoothTalkerConfig.ReloadTrigger.Value);
+            Plugin.LogSource.LogInfo("[SmoothTalker] Reload started");
+            Helpers.TryPlayVoiceline(player, Settings.ReloadTrigger.Value);
         }
     }
 
@@ -32,7 +32,7 @@ namespace SmoothTalker.Patches
         [PatchPostfix]
         private static void Postfix(Player.FirearmController __instance)
         {
-            ReloadPatchHelper.TryHandle(__instance);
+            ReloadHelpers.TryPlayReloadVoiceline(__instance);
         }
     }
 
@@ -50,7 +50,7 @@ namespace SmoothTalker.Patches
         [PatchPostfix]
         private static void Postfix(Player.FirearmController __instance)
         {
-            ReloadPatchHelper.TryHandle(__instance);
+            ReloadHelpers.TryPlayReloadVoiceline(__instance);
         }
     }
 }

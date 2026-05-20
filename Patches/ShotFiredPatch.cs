@@ -6,10 +6,7 @@ using UnityEngine;
 
 namespace SmoothTalker.Patches
 {
-    /// <summary>
-    /// Tracks the last time the local player fired a shot.
-    /// Used by the combat-only voiceline filter.
-    /// </summary>
+    // Tracks the last time the local player fired a shot.
     internal sealed class ShotFiredPatch : ModulePatch
     {
         protected override MethodBase GetTargetMethod()
@@ -18,11 +15,11 @@ namespace SmoothTalker.Patches
         [PatchPostfix]
         private static void Postfix(Player.FirearmController __instance)
         {
-            Player player = PatchHelper.GetControllerPlayer(__instance);
-            if (!PatchHelper.IsLocalPlayer(player))
+            Player player = Helpers.GetControllerPlayer(__instance);
+            if (!Helpers.IsLocalPlayer(player))
                 return;
 
-            SmoothTalkerPlugin.LastShotTime = Time.time;
+            Helpers.MarkShotFired();
         }
     }
 }

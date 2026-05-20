@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Reflection;
 using HarmonyLib;
+using SmoothTalker.Patches;
 
 namespace SmoothTalker
 {
@@ -29,7 +30,7 @@ namespace SmoothTalker
                 var coopHandlerType = AccessTools.TypeByName("Fika.Core.Main.Components.CoopHandler");
                 if (coopHandlerType == null)
                 {
-                    SmoothTalkerPlugin.Log("[SmoothTalker] Fika not detected — multiplayer-only filter will be unavailable.");
+                    Plugin.LogSource.LogInfo("[SmoothTalker] Fika not detected — multiplayer-only filter will be unavailable.");
                     return;
                 }
 
@@ -43,7 +44,7 @@ namespace SmoothTalker
                 var playerType = AccessTools.TypeByName("EFT.Player");
                 if (playerType == null)
                 {
-                    SmoothTalkerPlugin.Log("[SmoothTalker] EFT.Player not found — multiplayer-only filter will be unavailable.");
+                    Plugin.LogSource.LogInfo("[SmoothTalker] EFT.Player not found — multiplayer-only filter will be unavailable.");
                     return;
                 }
 
@@ -61,16 +62,16 @@ namespace SmoothTalker
                     || _healthControllerProp == null
                     || _isAliveProp == null)
                 {
-                    SmoothTalkerPlugin.Log("[SmoothTalker] Required Fika player-state members not found — multiplayer-only filter will be unavailable.");
+                    Plugin.LogSource.LogInfo("[SmoothTalker] Required Fika player-state members not found — multiplayer-only filter will be unavailable.");
                     return;
                 }
 
                 FikaInstalled = true;
-                SmoothTalkerPlugin.Log("[SmoothTalker] Fika detected — multiplayer-only filter available.");
+                Plugin.LogSource.LogInfo("[SmoothTalker] Fika detected — multiplayer-only filter available.");
             }
             catch (Exception ex)
             {
-                SmoothTalkerPlugin.Log($"[SmoothTalker] Error resolving Fika: {ex.Message}");
+                Plugin.LogSource.LogInfo($"[SmoothTalker] Error resolving Fika: {ex.Message}");
             }
         }
 
@@ -111,7 +112,7 @@ namespace SmoothTalker
             }
             catch (Exception ex)
             {
-                SmoothTalkerPlugin.Log($"[SmoothTalker] Error checking Fika multiplayer state: {ex.Message}");
+                Plugin.LogSource.LogInfo($"[SmoothTalker] Error checking Fika multiplayer state: {ex.Message}");
                 return false;
             }
         }

@@ -8,13 +8,13 @@ using UnityEngine;
 
 namespace SmoothTalker.Patches
 {
-    /// Tracks active teammate ping positions with a time-based expiry hard set at 10 seconds, maybe make configurable 
+    // Tracks active teammate ping positions with a time-based expiry
 
     internal static class PingRegistry
     {
         private static readonly List<(Vector3 pos, float exp)> _pings = new();
 
-        public static void Add(Vector3 pos) => _pings.Add((pos, Time.time + 10f));
+        public static void Add(Vector3 pos) => _pings.Add((pos, Time.time + Settings.PingSuppressionExpiry.Value));
 
         public static bool HasNearby(Vector3 point, float radius)
         {
@@ -31,47 +31,41 @@ namespace SmoothTalker.Patches
 
     internal static class SendPingPrefix
     {
-        private static float _range;
-        private static int _mask;
-        private static FieldInfo _playerFi, _lastPingTimeFi;
+        private static FieldInfo _lastPingTimeFi;
+        private static int _suppressedFrame = -1;
+
+        internal static bool SuppressedThisFrame => _suppressedFrame == Time.frameCount;
 
         private static void Init(object instance)
         {
-            if (_playerFi != null) return;
-
-            var g = AccessTools.TypeByName("Fika.Core.Main.Utils.FikaGlobals");
-            _range = g != null ? Convert.ToSingle(AccessTools.Field(g, "PingRange")?.GetValue(null)) : 0f;
-            _mask  = g != null ? (int)(AccessTools.Field(g, "PingMask")?.GetValue(null) ?? 0) : 0;
-            if (_range <= 0f) _range = 1000f;
-            if (_mask  == 0)  _mask  = Physics.DefaultRaycastLayers;
-
-            _playerFi      = AccessTools.Field(instance.GetType(), "_player");
+            if (_lastPingTimeFi != null) return;
             _lastPingTimeFi = AccessTools.Field(instance.GetType(), "_lastPingTime");
         }
 
         public static bool Run(object instance)
         {
-            if (!SmoothTalkerConfig.PingSuppressionEnabled.Value) return true;
+            if (!Settings.PingSuppressionEnabled.Value)
+                return true;
 
             try
             {
                 Init(instance);
 
-                var player = _playerFi?.GetValue(instance) as Player;
-                if (player == null || !player.HealthController.IsAlive) return true;
-
-                var cam = player.CameraPosition;
-                if (!Physics.Raycast(new Ray(cam.position + cam.forward / 2f, player.LookDirection),
-                        out var hit, _range, _mask))
+                if (!Helpers.TryRaycastFikaPing(instance, out Player player, out RaycastHit hit))
                     return true;
 
-                if (!PingRegistry.HasNearby(hit.point, SmoothTalkerConfig.PingSuppressionRadius.Value))
-                    return true;
+                bool suppressPing = Settings.PingSuppressionEnabled.Value
+                    && PingRegistry.HasNearby(hit.point, Settings.PingSuppressionRadius.Value);
 
-                _lastPingTimeFi?.SetValue(instance, DateTime.Now);
-                player.Speaker.Play(SmoothTalkerConfig.PingSuppressionTrigger.Value,
-                    player.HealthStatus | ETagStatus.Combat, true, null);
-                return false;
+                if (suppressPing)
+                {
+                    _suppressedFrame = Time.frameCount;
+                    _lastPingTimeFi?.SetValue(instance, DateTime.Now);
+                    Helpers.PlayPingSuppressionVoiceline(player);
+                    return false;
+                }
+
+                return true;
             }
             catch { return true; }
         }

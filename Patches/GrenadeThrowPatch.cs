@@ -34,15 +34,15 @@ namespace SmoothTalker.Patches
     {
         public static void OnThrow(Player.GrenadeHandsController controller)
         {
-            if (!SmoothTalkerConfig.GrenadeEnabled.Value)
+            if (!Settings.GrenadeEnabled.Value)
                 return;
 
-            Player player = PatchHelper.GetControllerPlayer(controller);
-            if (!PatchHelper.IsLocalPlayer(player))
+            Player player = Helpers.GetControllerPlayer(controller);
+            if (!Helpers.IsLocalPlayer(player))
                 return;
 
-            SmoothTalkerPlugin.Log("[SmoothTalker] Grenade thrown");
-            SmoothTalkerPlugin.TryPlayVoiceline(player, SmoothTalkerConfig.GrenadeTrigger.Value, requireCombat: false);
+            Plugin.LogSource.LogInfo("[SmoothTalker] Grenade thrown");
+            Helpers.TryPlayVoiceline(player, Settings.GrenadeTrigger.Value, requireCombat: false);
         }
     }
 }
